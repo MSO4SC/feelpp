@@ -1,0 +1,31 @@
+FROM ubuntu:16.04
+RUN apt-get update && \
+apt-get install -y \
+python2.7-minimal \
+libxrender1 libxrender-dev libfontconfig libfontconfig-dev \
+mesa-utils binutils module-init-tools iputils-ping net-tools \
+libxmu6 libglu1-mesa
+
+# NVIDIA driver
+COPY NVIDIA-Linux-x86_64-352.63.run /tmp/NVIDIA-DRIVER.run
+RUN sh /tmp/NVIDIA-DRIVER.run -a -N --ui=none --no-kernel-module && \
+rm /tmp/NVIDIA-DRIVER.run
+
+# Salome Universal binaries
+RUN ln -s /usr/bin/python2.7 /usr/bin/python
+COPY Salome-V7_8_0-public.run /tmp/Salome-V7_8_0-public.run
+RUN mkdir -p /opt/ && \
+cd /opt && \
+sh /tmp/Salome-V7_8_0-public.run -t /opt/salome -d && \
+rm /tmp/Salome-V7_8_0-public.run
+
+RUN apt-get autoremove \
+&& apt-get clean \
+&& rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+ENV PATH /opt/salome:/opt/salome/appli_V7_8_0:$PATH
+
+# Launch salome from the container
+COPY launch_salome_ft2.sh /opt/salome/launch_salome_ft2.sh
+
+CMD ["/opt/salome/launch_salome_ft2.sh"]
