@@ -21,13 +21,16 @@ mkdir /singularity
 singularity create --size 6000 /singularity/feelpp.img
 ```
 
-* import the current feelpp-toolboxes from dockerhub (it will download roughly 6 GiB so it might take a while): `singularity --verbose import/singularity/feelpp.img docker://feelpp/feelpp-toolboxes:latest`
+* import the current feelpp-toolboxes from dockerhub (it will download roughly 6 GiB so it might take a while): `singularity --verbose import /singularity/feelpp.img docker://feelpp/feelpp-toolboxes:latest`
 
 * start a singularity shell without bindings and with write support:
-`singularity shell -c -w /singularity/feelpp.img`
+`singularity shell -w /singularity/feelpp.img`
 * move the feelpp files away from the $HOME dir, since singularity will bind the users actual $HOME over that:
-`mv /home/feelpp /singularity/feelpp`
-* `exit` from the container
+```
+mkdir -p /opt
+mv /home/feelpp /opt/
+exit
+```
 
 ## running the toolboxes
 An example runscript:
